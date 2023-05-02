@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  web:
+    image: webdevops/php-nginx-dev:8.1
+    container_name: web-php-nginx-finc-api
+    working_dir: /app
+    ports:
+      - "80:80"
+    volumes:
+      - .:/app
+      # - ./docker/nginx/10-location-root.conf:/opt/docker/etc/nginx/vhost.common.d/10-location-root.conf
+      # - ./docker/nginx/10-php.conf:/opt/docker/etc/nginx/vhost.common.d/10-php.conf
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/public
+      - PHP_DISPLAY_ERRORS=1
+      - PHP_MEMORY_LIMIT=2048M
+      - PHP_MAX_EXECUTION_TIME=-1
+      - XDEBUG_MODE=debug
+      - XDEBUG_START_WITH_REQUEST=yes
+      - XDEBUG_CLIENT_PORT=9000
+      - XDEBUG_CLIENT_HOST=host.docker.internal
+      - XDEBUG_MAX_NESTING_LEVEL=1000
+    links:
+      - mysql
+  mysql:
+    container_name: mysql-finc-api
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: finc

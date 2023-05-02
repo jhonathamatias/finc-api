@@ -1,0 +1,26 @@
+{
+    "name": "jhon-dev/finc-api",
+    "authors": [
+        {
+            "name": "jhonathamatias",
+            "email": "jhonathamatias35@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "require": {
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.6",
+        "laminas/laminas-servicemanager": "^3.20",
+        "laminas/laminas-config-aggregator": "^1.13",
+        "vlucas/phpdotenv": "^5.5",
+        "robmorgan/phinx": "^0.13.4",
+        "doctrine/dbal": "^3.6",
+        "laminas/laminas-hydrator": "^4.13",
+        "respect/validation": "^2.2",
+        "laminas/laminas-diactoros": "^2.25"
+    }
+}
