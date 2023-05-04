@@ -27,8 +27,8 @@ class Auth
             $key,
             static fn (Builder $builder, DateTimeImmutable $issuedAt): Builder =>
             $builder
-                ->permittedFor($_ENV['ALLOWED_APP'])
-                ->expiresAt($issuedAt->modify('+60 minutes'))
+                ->permittedFor($_ENV['JWT_ALLOWED_HOST'])
+                ->expiresAt($issuedAt->modify($_ENV['JWT_EXPIRE_TIME']))
         );
 
         return $token->toString();
@@ -41,7 +41,7 @@ class Auth
             $validator = new Validator;
             $parserToken = $parser->parse($token);
     
-            $validator->assert($parserToken, new PermittedFor($_ENV['ALLOWED_APP']));
+            $validator->assert($parserToken, new PermittedFor($_ENV['JWT_ALLOWED_HOST']));
             $validator->assert($parserToken, new SignedWith(
                 new Sha256,
                 InMemory::plainText($_ENV['JWT_SECRET_KEY'])
