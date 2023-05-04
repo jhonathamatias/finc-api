@@ -11,14 +11,20 @@ $app->options('/{routes:.+}', function ($request, $response, $args) {
     return $response;
 })->add(\App\Middlewares\CorsMiddleware::class);
 
+/**
+ * Users
+ */
+$app->post('/signin', [App\Controllers\User::class, 'signIn'])
+    ->add(\App\Middlewares\CorsMiddleware::class)
+    ->add(\App\Middlewares\JsonBodyParserMiddleware::class);
+
 $app->group('/users', function (RouteCollectorProxy $group) {
     $group->post('/create', [App\Controllers\User::class, 'create']);
     $group->get('/{id}', [App\Controllers\User::class, 'getUser']);
 })
     ->add(\App\Middlewares\CorsMiddleware::class)
+    ->add(\App\Middlewares\AuthMiddleware::class)
     ->add(\App\Middlewares\JsonBodyParserMiddleware::class);
-
-
 
 /**
  * Catch-all route to serve a 404 Not Found page if none of the routes match

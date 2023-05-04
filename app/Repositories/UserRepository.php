@@ -28,7 +28,6 @@ class UserRepository
 
         unset($userDto->password);
 
-
         return $this->hydrator->hydrate($user, $userDto);
     }
 
@@ -61,5 +60,24 @@ class UserRepository
     public function getByEmail(string $email)
     {
         return $this->repository->findByColumn('email', $email)[0] ?? null;
+    }
+
+    public function getByEmailAndPass(string $email, string $password): UserDto
+    {
+        $user = $this->repository->where(
+            'email = ? AND password = ?', 
+            [$email, $password],
+            'id, name, email, phone'
+        )[0] ?? null;
+
+        if ($user === null) {
+            throw new NotFoundException('Email or/and password incorrects');
+        }
+
+        $userDto = new UserDto();
+
+        unset($userDto->password);
+
+        return $this->hydrator->hydrate($user, $userDto);
     }
 }

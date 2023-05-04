@@ -25,10 +25,6 @@ $responseFactory = $app->getResponseFactory();
 $serverRequestCreator = ServerRequestCreatorFactory::create();
 $request = $serverRequestCreator->createServerRequestFromGlobals();
 
-$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
-$shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);
-register_shutdown_function($shutdownHandler);
-
 $app->addBodyParsingMiddleware();
 
 // Add Routing Middleware
@@ -37,7 +33,6 @@ $app->addRoutingMiddleware();
 require 'routes/wep.php';
 
 // Add Error Handling Middleware
-$errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, true, true);
-$errorMiddleware->setDefaultErrorHandler($errorHandler);
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 $app->run();

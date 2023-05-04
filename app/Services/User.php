@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DTO\UserDto;
+use App\Infra\Auth;
 use App\Repositories\UserRepository;
 
 class User
@@ -18,5 +19,16 @@ class User
     public function getUser(int $id)
     {
         return $this->repo->getUser($id);
+    }
+
+    public function signIn(string $email, string $password)
+    {
+        $user = $this->repo->getByEmailAndPass($email, $password);
+
+        $auth = new Auth;
+
+        $user->accessToken = $auth->createToken();
+
+        return $user;
     }
 }

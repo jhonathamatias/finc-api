@@ -11,12 +11,27 @@ class User
      * @return bool
      * @throws
      */
-    public static function isValidPost(array $data): bool
+    public static function toCreate(array $data): bool
     {
         try {
             v::key('name', v::stringType()->length(3, 20))
                 ->key('email', v::stringType()->length(10, 1500))
                 ->key('phone', v::stringType())
+                ->key('password', v::stringType()
+                    ->notBlank()
+                    ->length(6, 20))
+            ->assert($data);
+    
+            return true;
+        } catch(\Respect\Validation\Exceptions\NestedValidationException $e) {
+            throw $e;
+        };
+    }
+
+    public static function toSignIn(array $data): bool
+    {
+        try {
+            v::key('email', v::stringType()->length(3, 100))
                 ->key('password', v::stringType()
                     ->notBlank()
                     ->length(6, 20))

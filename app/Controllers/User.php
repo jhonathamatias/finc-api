@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\RequestDataValidator\User as RequestDataValidatorUser;
 use App\DTO\UserDto;
+use App\Infra\HttpResponse;
 use App\Repositories\Exceptions\AlreadyExistException;
 use App\Repositories\Exceptions\NotFoundException;
 use App\Services\User as UserService;
@@ -28,7 +29,7 @@ class User
         try {
             $post = $request->getParsedBody() ?? [];
 
-            RequestDataValidatorUser::isValidPost($post);
+            RequestDataValidatorUser::toCreate($post);
 
             $user = new UserDto();
 
@@ -37,7 +38,7 @@ class User
             $userCreated = $this->service->create($user);
 
             return $httpResponse->withJson([
-                'user' => $userCreated
+                'user' => $this->hydrator->extract($userCreated)
             ], StatusCodeInterface::STATUS_CREATED);
         } catch (NestedValidationException $e) {
             return $httpResponse->withJson([
@@ -62,12 +63,41 @@ class User
             $user = $this->service->getUser($attrs['id']);
 
             return $httpResponse->withJson([
-                'user' => $user,
+                'user' => $this->hydrator->extract($user),
             ], 200);
         } catch (NotFoundException $e) {
             return $httpResponse->withJson([
                 'not_found' => $e->getMessage()
             ], StatusCodeInterface::STATUS_NOT_FOUND);
+        } catch (\Exception $e) {
+            return $httpResponse->withJson([
+                'server_error' => $e->getMessage()
+            ], StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function signIn(Request $request, Response $response)
+    {
+        $httpResponse = new HttpResponse($response);
+
+        try {
+            $post = $request->getParsedBody() ?? [];
+
+            RequestDataValidatorUser::toSignIn($post);
+
+            $userAuth = $this->service->signIn($post['email'], $post['password']);
+
+            return $httpResponse->withJson([
+                'user' => $this->hydrator->extract($userAuth)
+            ]);
+        } catch (NestedValidationException $e) {
+            return $httpResponse->withJson([
+                'validation_params' => $e->getMessages()
+            ], StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY);
+        } catch (NotFoundException $e) {
+            return $httpResponse->withJson([
+                'unauthorized' => $e->getMessage()
+            ], StatusCodeInterface::STATUS_UNAUTHORIZED);
         } catch (\Exception $e) {
             return $httpResponse->withJson([
                 'server_error' => $e->getMessage()
