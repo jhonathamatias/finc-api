@@ -21,6 +21,7 @@
         "doctrine/dbal": "^3.6",
         "laminas/laminas-hydrator": "^4.13",
         "respect/validation": "^2.2",
-        "laminas/laminas-diactoros": "^2.25"
+        "laminas/laminas-diactoros": "^2.25",
+        "lcobucci/jwt": "^5.0"
     }
 }

@@ -51,6 +51,13 @@ class RepositoryDbal implements RepositoryInterface
         return $statement->fetchAllAssociative();
     }
 
+    public function where(string $condition, array $values, string $columns)
+    {
+        $statement = $this->dbal->executeQuery("SELECT $columns FROM $this->repository WHERE $condition", $values);
+        
+        return $statement->fetchAllAssociative();
+    }
+
     public function executeQuery(string $query, array $columns)
     {
         return $this->dbal->executeQuery($query, $columns);

@@ -17,5 +17,6 @@ class UserDto
         public string|null $email = null,
         public string|null $phone = null,
         public string|null $password = null,
+        public string|null $accessToken = null,
     ) {}
 }
